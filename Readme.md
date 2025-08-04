@@ -4,7 +4,7 @@
     <p>Welcome to the Softeko Intern Interview Practical Exam repository! This repo serves as the central location for all candidates to submit their practical exam solutions.</p>
 </div>
 <h2>Get Question</h2>
-https://codesWithRifat.github.io/softeko_odoo_practical_exam/index.html
+https://codeswithrifat.github.io/softeko_odoo_practical_exam/
 <h2>📌 Instructions for Candidates</h2>
 
 <h3>1. Clone the Repository</h3>
