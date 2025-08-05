@@ -1,0 +1,5 @@
+<record id="action_mass_leave_allocation" model="ir.actions.act_window">
+    <field name="name">Bulk Leave Allocation</field>
+    <field name="res_model">mass.leave.allocation</field>
+    <field name="view_mode">tree,form</field>
+</record>
