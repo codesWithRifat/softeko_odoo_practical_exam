@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Main Menu -->
+    <menuitem id="menu_mass_leave_allocator_root"
+              name="Mass Leave Allocator"
+              sequence="10"/>
+
+    <!-- Action -->
+    <record id="action_mass_leave_allocation_wizard" model="ir.actions.act_window">
+        <field name="name">Mass Leave Allocation</field>
+        <field name="res_model">mass.leave.allocation.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <!-- Sub Menu calling the Action -->
+    <menuitem id="menu_mass_leave_allocation"
+              name="Bulk Leave Allocation"
+              parent="menu_mass_leave_allocator_root"
+              action="mass_leave_allocator.action_mass_leave_allocation_wizard"
+              sequence="20"/>
+</odoo>
