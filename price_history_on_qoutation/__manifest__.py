@@ -9,12 +9,11 @@
         
         Features:
         - View price history for specific product and customer combinations
-        - Multiple UI options: smart button, inline button, and collapsible section
         - Advanced filtering by date range
         - "Use Last Price" functionality
         - Integration with existing sale.report model
     """,
-    'author': 'Your Company',
+    'author': 'Rifat',
     'depends': [
         'base',
         'sale',
@@ -23,6 +22,7 @@
     'data': [
         'security/ir.model.access.csv',
         'views/sale_order_views.xml',
+        'views/last_price_view.xml',
     ],
     'demo': [],
     'installable': True,
