@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Simple button in order line tree view -->
+    <record id="view_order_form_inherit_price_history_line" model="ir.ui.view">
+        <field name="name">sale.order.form.price.history.line.inherit</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <!-- Add button after the price_unit field in order lines -->
+            <xpath expr="//field[@name='order_line']/list//field[@name='price_unit']" position="after">
+                <button name="action_view_sale_report"
+                        type="object"
+                        string="History"
+                        class="btn-link"
+                        icon="fa-history"
+                        invisible="not product_id"
+                        help="View price history for this product and customer"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
