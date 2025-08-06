@@ -7,13 +7,13 @@
         <field name="arch" type="xml">
             <!-- Add button after the price_unit field in order lines -->
             <xpath expr="//field[@name='order_line']/list//field[@name='price_unit']" position="after">
-                <button name="action_view_sale_report"
+                <button name="action_get_last_price"
                         type="object"
                         string="Last Price"
                         class="btn-link"
                         icon="fa-money"
                         invisible="not product_id"
-                        help="View price history for this product and customer"/>
+                        help="Get last price offered to this product and customer"/>
             </xpath>
         </field>
     </record>
