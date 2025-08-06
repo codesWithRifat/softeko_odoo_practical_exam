@@ -2,7 +2,7 @@ from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 
 
-class SaleOrderLine(models.Model):
+class GetLastPrice(models.Model):
     _inherit = 'sale.order.line'
 
     def action_get_last_price(self):
@@ -17,21 +17,23 @@ class SaleOrderLine(models.Model):
         product_tmpl_id = self.product_id.product_tmpl_id.id
         partner_id = self.order_id.partner_id.id
         
-        domain = [
-            ('product_tmpl_id', '=', product_tmpl_id),
-            ('partner_id', '=', partner_id),
-            ('state', 'in', ['sale', 'done']),
-        ]
-        
-        last_sale = self.env['sale.report'].search(
-            domain,
-            order='order_reference desc',  
-            limit=1 
-        )
-        
-        if last_sale:
-            self.write({'price_unit': last_sale.price_unit})
+        if self.order_id.state != 'draft':
+            raise UserError(_("You can only update prices in draft orders!"))
         else:
-            raise UserError(_("This product has not been sold to this customer before!!!"))
-        
-        return True
+            domain = [
+                ('product_tmpl_id', '=', product_tmpl_id),
+                ('partner_id', '=', partner_id),
+                ('state', 'in', ['sale', 'done']),
+            ]
+            
+            last_sale = self.env['sale.report'].search(
+                domain,
+                order='order_reference desc',  
+                limit=1 
+            )
+            
+            if last_sale:
+                self.write({'price_unit': last_sale.price_unit})
+            else:
+                raise UserError(_("This product has not been sold to this customer before!!!"))
+            return True
