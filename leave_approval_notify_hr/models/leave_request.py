@@ -1,5 +1,7 @@
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
+from odoo.exceptions import ValidationError
+from datetime import datetime
 
 class LeaveRequest(models.Model):
     _name = 'leave.request'
@@ -23,6 +25,20 @@ class LeaveRequest(models.Model):
     manager_id = fields.Many2one(
         'hr.employee', string='Manager', 
         compute='_compute_manager_id', store=True)
+    
+
+    @api.constrains('date_from')
+    def _check_date_from(self):
+        for record in self:
+            if record.date_from and record.date_from < fields.Date.today():
+                raise ValidationError("From Date cannot be in the Past.")
+    @api.constrains('date_to')
+    def _check_date_to(self):
+        for record in self:
+            if record.date_to and record.date_to < record.date_from :
+                raise ValidationError("Date TO cannot be  before Date from.")
+            
+
 
     @api.depends('employee_id')
     def _compute_manager_id(self):
