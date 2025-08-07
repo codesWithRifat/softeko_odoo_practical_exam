@@ -72,19 +72,22 @@ class AlternativeHolidayRequest(models.Model):
 
     def _create_leave_allocation(self):
         """Create a leave allocation in hr.leave for the approved requested leave date."""
-        leave_type = self.env['hr.leave.type'].search([ # Ensure it's a daily leave type
+        leave_type = self.env['hr.leave.type'].search([  # Ensure it's a daily leave type
             ('active', '=', True),        # Only active leave types
         ], limit=1)
         if not leave_type:
             raise ValidationError("No valid leave type found. Please configure a daily leave type in Time Off.")
-        self.env['hr.leave'].create({
+        
+        self.env['hr.leave'].with_context(bypass_overlap_check=True).create({
             'name': f"Alternative Holiday for {self.employee_id.name} ({self.worked_date})",
             'holiday_status_id': leave_type.id,
             'employee_id': self.employee_id.id,
             'date_from': self.requested_leave_date,
             'date_to': self.requested_leave_date,
-            'number_of_days': 1
+            'number_of_days': 1,
+            'state': 'confirm',  # Create in draft state for manual validation
         })
+
 
     def _notify_manager(self):
         """Send a notification to the employee's manager with request details."""
@@ -102,17 +105,17 @@ class AlternativeHolidayRequest(models.Model):
                 </ul>
                 <p>Please review in <strong>Alternative Holiday Request > Manager > Requests To Approve</strong>.</p>
             """
-            # # Post to chatter
-            # self.message_post(
-            #     body=f"New alternative holiday request submitted by {self.employee_id.name} for {self.requested_leave_date}.",
-            #     partner_ids=[manager.partner_id.id],
-            #     message_type='notification',
-            #     subtype_id=self.env.ref('mail.mt_comment').id
-            # )
-            # # Send email
-            # template = self.env.ref('alternative_holiday.email_template_holiday_request_submission', raise_if_not_found=False)
-            # if template:
-            #     template.send_mail(self.id, force_send=True, email_values={'recipient_ids': [(4, manager.partner_id.id)]})
+            # Post to chatter
+            self.message_post(
+                body=f"New alternative holiday request submitted by {self.employee_id.name} for {self.requested_leave_date}.",
+                partner_ids=[manager.partner_id.id],
+                message_type='notification',
+                subtype_id=self.env.ref('mail.mt_comment').id
+            )
+            # Send email
+            template = self.env.ref('alternative_holiday.email_template_holiday_request_submission', raise_if_not_found=False)
+            if template:
+                template.send_mail(self.id, force_send=True, email_values={'recipient_ids': [(4, manager.partner_id.id)]})
 
     @api.constrains('worked_date', 'day_type')
     def _check_worked_date_type(self):
