@@ -1,14 +1,16 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-    <record id="view_leave_request_tree" model="ir.ui.view">
-        <field name="name">leave.request.tree</field>
+    <!-- My Leave Requests View -->
+    <record id="view_leave_request_list" model="ir.ui.view">
+        <field name="name">leave.request.list</field>
         <field name="model">leave.request</field>
         <field name="arch" type="xml">
             <list>
                 <field name="employee_id"/>
-                <field name="leave_type"/>
-                <field name="from_date"/>
-                <field name="to_date"/>
+                <field name="leave_type_id"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="reason"/>
                 <field name="state"/>
             </list>
         </field>
@@ -20,79 +22,106 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <button name="action_submit" string="Submit" type="object" class="oe_highlight" states="draft"/>
-                    <button name="action_approve" string="Approve" type="object" class="oe_highlight" states="submitted" groups="base.group_user"/>
-                    <button name="action_reject" string="Reject" type="object" states="submitted" groups="base.group_user"/>
-                    <button name="action_create_hr_leave" string="Create HR Leave" type="object" states="approved" groups="hr.group_hr_user"/>
+                    <button name="action_submit" string="Submit" type="object" class="btn-primary" 
+                            invisible="state != 'draft'"/>
+                    <button name="action_approve" string="Approve" type="object" class="btn-primary" 
+                            invisible="state != 'submitted'"/>
+                    <button name="action_reject" string="Reject" type="object" 
+                            invisible="state != 'submitted'"/>
+                    <button name="action_convert_to_leave" string="Convert to Official Leave" type="object" 
+                            invisible="state != 'approved'"/>
                     <field name="state" widget="statusbar"/>
                 </header>
                 <sheet>
                     <group>
-                        <group>
-                            <field name="employee_id"/>
-                            <field name="manager_id" readonly="1"/>
-                            <field name="leave_type"/>
-                        </group>
-                        <group>
-                            <field name="from_date"/>
-                            <field name="to_date"/>
-                            <field name="state"/>
-                        </group>
-                    </group>
-                    <group>
+                        <field name="employee_id" readonly="1"/>
+                        <field name="manager_id" readonly="1"/>
+                        <field name="leave_type_id"/>
+                        <field name="date_from"/>
+                        <field name="date_to"/>
                         <field name="reason"/>
-                    </group>
-                    <group>
-                        <field name="manager_comments" placeholder="Enter your comments here..." />
+                        <field name="manager_comments"/>
                     </group>
                 </sheet>
                 <div class="oe_chatter">
-                    <field name="message_ids" widget="mail_thread"/>
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
                 </div>
             </form>
         </field>
     </record>
 
-    <!-- Filtered view for HR (Bonus) -->
-    <record id="view_leave_request_hr_tree" model="ir.ui.view">
-        <field name="name">leave.request.hr.tree</field>
+    <!-- Manager Approval View -->
+    <record id="view_leave_request_manager_list" model="ir.ui.view">
+        <field name="name">leave.request.manager.list</field>
         <field name="model">leave.request</field>
-        <field name="inherit_id" ref="view_leave_request_tree"/>
         <field name="arch" type="xml">
-            <xpath expr="//tree" position="attributes">
-                <attribute name="default_order">create_date desc</attribute>
-            </xpath>
-            <xpath expr="//field[@name='state']" position="after">
-                <field name="manager_id"/>
-            </xpath>
+            <list>
+                <field name="employee_id"/>
+                <field name="leave_type_id"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="reason"/>
+                <field name="state"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- HR View (Filtered for Approved) -->
+    <record id="view_leave_request_hr_list" model="ir.ui.view">
+        <field name="name">leave.request.hr.list</field>
+        <field name="model">leave.request</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="employee_id"/>
+                <field name="leave_type_id"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="reason"/>
+                <field name="state"/>
+            </list>
         </field>
     </record>
 
     <!-- Actions -->
-    <record id="action_leave_request_all" model="ir.actions.act_window">
-        <field name="name">All Leave Requests</field>
-        <field name="res_model">leave.request</field>
-        <field name="view_mode">list,form</field>
-        <field name="domain">[]</field>
-        <field name="context">{'search_default_approved': 1}</field>
-        <field name="help" type="html">
-            <p class="o_view_nocontent_smiling_face">No leave requests yet</p>
-        </field>
-    </record>
-
-    <record id="action_leave_request_to_approve" model="ir.actions.act_window">
-        <field name="name">Requests to Approve</field>
-        <field name="res_model">leave.request</field>
-        <field name="view_mode">list,form</field>
-        <field name="domain">[('state', '=', 'submitted'), ('manager_id', '=', uid)]</field>
-        <field name="context">{'search_default_submitted': 1}</field>
-    </record>
-
-    <record id="action_leave_request_my" model="ir.actions.act_window">
+    <record id="action_my_leave_requests" model="ir.actions.act_window">
         <field name="name">My Leave Requests</field>
         <field name="res_model">leave.request</field>
         <field name="view_mode">list,form</field>
-        <field name="domain">[('employee_id.user_id', '=', uid)]</field>
-        <field name="context">{'search_default_my_requests': 1}</field>
+        <field name="domain">[('employee_id.user_id.id', '=', user.id)]</field>
     </record>
+
+    <record id="action_requests_to_approve" model="ir.actions.act_window">
+        <field name="name">Requests to Approve</field>
+        <field name="res_model">leave.request</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('employee_id.parent_id.user_id.id', '=', user.id), ('state', '=', 'submitted')]</field>
+    </record>
+
+    <record id="action_all_requests" model="ir.actions.act_window">
+        <field name="name">All Requests</field>
+        <field name="res_model">leave.request</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('state', '=', 'approved')]</field>
+    </record>
+
+    <!-- Menu Items -->
+    <menuitem id="menu_leave_approval_root" 
+              name="Leave Approval Notifier" 
+              sequence="10"/>
+    <menuitem id="menu_my_leave_requests" 
+              parent="menu_leave_approval_root" 
+              action="action_my_leave_requests" 
+              sequence="10"/>
+    <menuitem id="menu_requests_to_approve" 
+              parent="menu_leave_approval_root" 
+              action="action_requests_to_approve" 
+              groups="group_leave_manager"
+              sequence="20"/>
+    <menuitem id="menu_all_requests" 
+              parent="menu_leave_approval_root" 
+              action="action_all_requests" 
+              groups="group_leave_hr"
+              sequence="30"/>
 </odoo>

@@ -7,12 +7,13 @@
         and automatically notifies HR after approval.
     """,
     'author': 'Humayra,Rifat, Lamia',
-    'depends': ['hr', 'mail'],
+    'depends': ['base','hr', 'mail'],
     'data': [
+        'security/leave_approval_security.xml',
         'security/ir.model.access.csv',
-        'security/security_rules.xml',
         'views/leave_request_views.xml',
-        'views/menu_views.xml',
+        'views/leave_type_views.xml',
+        'data/mail_template_data.xml',
     ],
     'installable': True,
     'application': True,

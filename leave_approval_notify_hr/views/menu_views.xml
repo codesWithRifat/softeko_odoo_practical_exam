@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<odoo>
-    <!-- Menu Structure -->
-    <menuitem id="menu_leave_request_root" name="Leave Approval Notifier" sequence="10"/>
-    
-    <menuitem id="menu_leave_request_my" name="My Leave Requests" parent="menu_leave_request_root" action="action_leave_request_my" sequence="10"/>
-    <menuitem id="menu_leave_request_to_approve" name="Requests to Approve" parent="menu_leave_request_root" action="action_leave_request_to_approve" sequence="20" groups="base.group_user"/>
-    <menuitem id="menu_leave_request_all" name="All Requests" parent="menu_leave_request_root" action="action_leave_request_all" sequence="30" groups="hr.group_hr_user"/>
-</odoo>
